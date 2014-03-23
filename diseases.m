@@ -8,6 +8,11 @@
 % Learning:
 % && - AND
 
+% CHARTS:
+% PIE CHART FOR EACH CITY TO SHOW S, I, R
+% 4 CIRCLES AND MOVE IN AND OUT OF EACH CIRCLE
+% EACH CITY HAS ITS OWN COLOR FOR EACH DOT AS WELL.
+
 clear all; 
 clf;
 
@@ -135,4 +140,3 @@ for clock = 1:clock_max
         R_save(i, clock) = R(i);
     end
 end
-
