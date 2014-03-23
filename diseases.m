@@ -5,6 +5,9 @@
 % There are cities where the Recovery rates are going down as even
 % Recovered people are moving between the cities. 
 
+% Learning:
+% && - AND
+
 clear all; 
 clf;
 
@@ -36,6 +39,8 @@ Travel = [0 40 30 5; 10 0 50 14; 9 49 0 14; 19 32 44 0];
 % people who are leaving from i, j are people coming in from i to j
 % outTravel = [0 0 0 0; 50 0 50 50; 50 50 0 50; 50 50 50 0];
 
+doneInitializing = false;
+
 % so travel to i, i does not work
 % and travel to j, j does not work
 for c = 1:numCities
@@ -56,6 +61,7 @@ for clock = 1:clock_max
         % So we don't cross the threshold of having everyone recovered
         % before introducing traffic
         if I(c) >= N(c)/2
+            doneInitializing = true;
             break;
         end
         for s = 1:S(c)
@@ -78,43 +84,50 @@ for clock = 1:clock_max
     end
     
     for i = 1:numCities
-        for j = 1:numCities
-            % Count traffic entering and leaving city i
-            if (i ~= j)
-                
-                 % Aggregate population moving to i from j
-                 for k = 1:Travel(i, j)
-                    prop_s = S(i) / N(i);
-                    prop_i = I(i) / N(i);
-                    prop_r = R(i) / N(i);
-                    rand_num = rand;
-                    
-                    if (rand_num >= 0 && rand_num <= prop_s)
-                        S(i) = S(i) - 1;
-                    elseif (rand_num > prop_s && rand_num <= prop_s + prop_i)
-                        I(i) = I(i) - 1;
-                    elseif (rand_num > prop_s + prop_i && rand_num <= 1)
-                        R(i) = R(i) - 1;
-                    end
-                    
-                 end
-                 
-                 % Aggregate population moving from j to i
-                 for k = 1:Travel(j, i)
-                    prop_s = S(j) / N(j);
-                    prop_i = I(j) / N(j);
-                    prop_r = R(j) / N(j);                           
-                    rand_num = rand;
-                    
-                    if (rand_num >= 0 && rand_num <= prop_s)
-                        S(i) = S(i) + 1;
-                    elseif (rand_num > prop_s && rand_num <= prop_s + prop_i)
-                        I(i) = I(i) + 1;
-                    elseif (rand_num > prop_s + prop_i && rand_num <= 1)
-                        R(i) = R(i) + 1;
-                    end
-                    
-                 end
+        if doneInitializing
+            for j = 1:numCities
+                % Count traffic entering and leaving city i
+                if(i ~= j)
+                     % Aggregate population moving i from to j
+                     if(S(i) + R(i) + I(i) >= Travel(i, j))
+                         for k = 1:Travel(i, j)
+                            prop_s = S(i) / N(i);
+                            prop_i = I(i) / N(i);
+                            prop_r = R(i) / N(i);
+                            rand_num = rand;
+                            if(rand_num >= 0 && (rand_num <= prop_s && S(i) ~= 0))
+                                S(i) = S(i) - 1;
+                                S(j) = S(j) + 1;
+                            elseif(rand_num > prop_s && (rand_num <= prop_s + prop_i && I(i) ~= 0))
+                                I(i) = I(i) - 1;
+                                I(j) = I(j) + 1;
+                            elseif(rand_num > prop_s + prop_i && (rand_num <= 1 && R(i) ~= 0))
+                                R(i) = R(i) - 1;
+                                R(j) = R(j) + 1;
+                            end
+                         end
+                     end
+
+                     % Aggregate population moving from j to i
+                     if(S(j) + R(j) + I(j) >= Travel(j, i))
+                         for k = 1:Travel(j, i)
+                            prop_s = S(j) / N(j);
+                            prop_i = I(j) / N(j);
+                            prop_r = R(j) / N(j);                           
+                            rand_num = rand;
+                            if(rand_num >= 0 && (rand_num <= prop_s && S(j) ~= 0))
+                                S(i) = S(i) + 1;
+                                S(j) = S(j) - 1;
+                            elseif(rand_num > prop_s && (rand_num <= prop_s + prop_i && I(j) ~= 0))
+                                I(i) = I(i) + 1;
+                                I(j) = I(j) - 1;
+                            elseif(rand_num > prop_s + prop_i && (rand_num <= 1 && R(j) ~= 0))
+                                R(i) = R(i) + 1;
+                                R(j) = R(j) - 1;
+                            end
+                         end
+                     end
+                end
             end
         end
         S_save(i, clock) = S(i);
@@ -122,3 +135,4 @@ for clock = 1:clock_max
         R_save(i, clock) = R(i);
     end
 end
+
