@@ -87,10 +87,10 @@ for clock = 1:clock_max
             newlyInfected = 0;
             % So we don't cross the threshold of having everyone recovered
             % before introducing traffic
-            if I(c) >= N(c)/2
-                doneInitializing = true;
-                break;
-            end
+%             if I(c) >= N(c)/2
+%                 doneInitializing = true;
+%                 break;
+%             end
             for s = 1:S(c)
                 if (rand < (dt * a(c) * I(c) / N(c)))
                     dt * a(c) * I(c) / N(c)  
@@ -116,13 +116,18 @@ for clock = 1:clock_max
                 % Count traffic entering and leaving city i
                 if(i ~= j)
                     
+                    biasedSR_j = 0;
+                    biasedI_j = 0;
+                    biasedSR_i = 0;
+                    biasedI_i = 0;
                     if (S(i) + R(i)) < I(i)
                         %Bias rates
                         biasedSR_j = (I(i) / N(i));
                         biasedI_j = (I(i) / N(i));
 
-                        biasedSR_i = 1 - biasedSR_j
-                        biasedI_i = 1 - biasedI_j
+                        biasedSR_i = 1 - biasedSR_j;
+                        biasedI_i = 1 - biasedI_j;
+                  
                         
                         % think
                         %TravelSR(j, i) = (sum(R)+sum(S)) - N(j)*TravelSR(i, j);
@@ -180,6 +185,9 @@ for clock = 1:clock_max
                             R(i) = R(i) + 1;
                          end
                      end
+                     
+                     N(i) = S(i) + I(i) + R(i);
+                     N(j) = S(j) + I(j) + R(j);
                 end
             end
             
