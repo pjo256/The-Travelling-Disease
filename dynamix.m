@@ -1,3 +1,4 @@
+
 % Observations:
 % There is always one city whose number of infections goes down
 % It's the city with the travel rates the smallest
@@ -115,35 +116,43 @@ for clock = 1:clock_max
                 % Count traffic entering and leaving city i
                 if(i ~= j)
                     
-                    if S(i) < I(i)
+                    if (S(i) + R(i)) < I(i)
                         %Bias rates
-                        global_prop_S = sum(S) / totalPopulation;
-                        global_prop_I = sum(I) / totalPopulation;
-                        TravelSR(i, j) = global_prop_S * (S(i) / N(i));
-                        TravelI(i, j) = global_prop_I * (I(i) / N(i));
+                        biasedSR_j = (I(i) / N(i));
+                        biasedI_j = (I(i) / N(i));
+
+                        biasedSR_i = 1 - biasedSR_j
+                        biasedI_i = 1 - biasedI_j
                         
                         % think
                         %TravelSR(j, i) = (sum(R)+sum(S)) - N(j)*TravelSR(i, j);
                         %TravelI(j, i) = sum(I) - N(j)*TravelI(i, j);
+                    else
+                        biasedSR_j = TravelSR(i, j);
+                        biastedI_j = TravelI(i, j);
+
+                        biasedSR_i = TravelSR(j, i);
+                        biasedI_i = TravelI(j, i);
+
                     end
                     
                      % i -> j                     
                      for s = 1:S(i)
-                        if rand < TravelSR(i, j) && (S(i) ~= 0)
+                        if rand < biasedSR_j && (S(i) ~= 0)
                             S(i) = S(i) - 1;
                             S(j) = S(j) + 1;
                         end
                      end                     
                      
                      for inf = 1:I(i)
-                        if rand < TravelI(i, j) && (I(i) ~= 0)
+                        if rand < biasedI_j && (I(i) ~= 0)
                             I(i) = I(i) - 1;
                             I(j) = I(j) + 1;
                         end
                      end                   
                      
                      for r = 1:R(i)
-                         if rand < TravelSR(i, j) && (R(i) ~= 0)
+                         if rand < biasedSR_j && (R(i) ~= 0)
                              R(i) = R(i) - 1;
                              R(j) = R(j) + 1;
                          end
@@ -152,21 +161,21 @@ for clock = 1:clock_max
                      % j -> i
                      
                      for s = 1:S(j)
-                        if rand < TravelSR(j, i) && (S(j) ~= 0)
+                        if rand < biasedSR_i && (S(j) ~= 0)
                             S(j) = S(j) - 1;
                             S(i) = S(i) + 1;
                         end
                      end                     
                      
                      for inf = 1:I(j)
-                        if rand < TravelI(j, i) && (I(j) ~= 0)
+                        if rand < biasedI_i && (I(j) ~= 0)
                             I(j) = I(j) - 1;
                             I(i) = I(i) + 1;
                         end
                      end
                      
                      for r = 1:R(j)
-                         if rand < TravelSR(j, i) && (R(j) ~= 0)
+                         if rand < biasedSR_i && (R(j) ~= 0)
                             R(j) = R(j) - 1;
                             R(i) = R(i) + 1;
                          end
@@ -252,3 +261,4 @@ title('City Pop 3');
 subplot(4, 4, 16);
 plot(N_save(4,1:clock))
 title('City Pop 4');
+
