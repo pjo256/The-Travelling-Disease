@@ -51,7 +51,22 @@ TravelI = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0
 %traffic is a rate!
 
 
+% people coming in
+% inTravel = [0 40 30 5; 10 0 25 14; 9 49 0 14; 19 32 44 0];
+% people who are leaving from i, j are people coming in from i to j
+% outTravel = [0 0 0 0; 50 0 50 50; 50 50 0 50; 50 50 50 0];
+
+%doneInitializing = false;
 startedTravel = false;
+% so travel to i, i does not work
+% and travel to j, j does not work
+for c = 1:numCities
+    for x = 1:numCities
+       if c == x
+          Travel(c, x) = 0;
+       end
+    end
+end
 
 figure;
 set(gcf, 'double', 'on');
@@ -111,22 +126,46 @@ for clock = 1:clock_max
     end
 
     for i = 1:numCities
+        %if doneInitializing
             for j = 1:numCities
                 % Count traffic entering and leaving city i
                 if(i ~= j)
-                    
-                    if S(i) < I(i)
-                        %Bias rates
-                        global_prop_S = sum(S) / totalPopulation;
-                        global_prop_I = sum(I) / totalPopulation;
-                        TravelSR(i, j) = global_prop_S * (S(i) / N(i));
-                        TravelI(i, j) = global_prop_I * (I(i) / N(i));
-                        
-                        % think
-                        %TravelSR(j, i) = (sum(R)+sum(S)) - N(j)*TravelSR(i, j);
-                        %TravelI(j, i) = sum(I) - N(j)*TravelI(i, j);
-                    end
-                    
+                    %for each pair, loop into all people in city i
+                        %loop over all susceptible, give them a chance to
+                        %travel
+                        %loop over all infected, give them a chance to
+                        %travel
+                        % . . .
+                        %three matrices.
+                            %
+                            %F_S_ij
+                            %F_I_ij
+                            %F_R_ij
+                            %maybe have F_S_ij = F_R_ij
+              
+                     % Aggregate population moving i from to j
+                     %study travel by itself, populations should settle
+                     %down. should be equilibrium populations.
+                     
+                     %Instead of letting SIR evolve first, let travel
+                     %evolve first until approx. settled down populations.
+                     
+                     %static travel rate array.
+                     %at least 3 cities --> 2 kinds of steady states. every
+                     %path balanced by its own path. detail balance -->
+                     %paths equal.
+                     %set up probabilities so only possible to go in cycle.
+                     %it'll settle down, there is no reverse path. 
+                     
+                     %principle of detail balance.
+                     
+                     %a nice complication 
+                     %travel rates depends on level of infection at each
+                     %time step
+                     %get it working for static rates
+                     %make it proportional to I(c)/N(c)
+                     
+                     
                      % i -> j                     
                      for s = 1:S(i)
                         if rand < TravelSR(i, j) && (S(i) ~= 0)
@@ -171,9 +210,48 @@ for clock = 1:clock_max
                             R(i) = R(i) + 1;
                          end
                      end
+                     
+%                      if(S(i) + R(i) + I(i) >= Travel(i, j))
+%                          for k = 1:Travel(i, j)
+%                             prop_s = S(i) / N(i);
+%                             prop_i = I(i) / N(i);
+%                             prop_r = R(i) / N(i);
+%                             rand_num = rand;
+%                             if(rand_num >= 0 && (rand_num <= prop_s && S(i) ~= 0))
+%                                 S(i) = S(i) - 1;
+%                                 S(j) = S(j) + 1;
+%                             elseif(rand_num > prop_s && (rand_num <= prop_s + prop_i && I(i) ~= 0))
+%                                 I(i) = I(i) - 1;
+%                                 I(j) = I(j) + 1;
+%                             elseif(rand_num > prop_s + prop_i && (rand_num <= 1 && R(i) ~= 0))
+%                                 R(i) = R(i) - 1;
+%                                 R(j) = R(j) + 1;
+%                             end
+%                          end
+%                      end
+% 
+%                      % Aggregate population moving from j to i
+%                      if(S(j) + R(j) + I(j) >= Travel(j, i))
+%                          for k = 1:Travel(j, i)
+%                             prop_s = S(j) / N(j);
+%                             prop_i = I(j) / N(j);
+%                             prop_r = R(j) / N(j);                           
+%                             rand_num = rand;
+%                             if(rand_num >= 0 && (rand_num <= prop_s && S(j) ~= 0))
+%                                 S(i) = S(i) + 1;
+%                                 S(j) = S(j) - 1;
+%                             elseif(rand_num > prop_s && (rand_num <= prop_s + prop_i && I(j) ~= 0))
+%                                 I(i) = I(i) + 1;
+%                                 I(j) = I(j) - 1;
+%                             elseif(rand_num > prop_s + prop_i && (rand_num <= 1 && R(j) ~= 0))
+%                                 R(i) = R(i) + 1;
+%                                 R(j) = R(j) - 1;
+%                             end
+%                          end
+%                      end
                 end
             end
-            
+        %end
         N_save(i, clock) = [S(i)+I(i)+R(i)];
         S_save(i, clock) = S(i);
         I_save(i, clock) = I(i);
@@ -181,6 +259,19 @@ for clock = 1:clock_max
     end
     
     clf('reset')
+%     
+%     if S(1)/totalPopulation < 0 || S(2)/totalPopulation < 0 || S(3)/totalPopulation < 0 || S(4)/totalPopulation
+%         S(1)
+%         S(2)
+%         S(3)
+%         S(4)
+%         totalPopulation
+%         S(2)/totalPopulation
+%         S(1)/totalPopulation
+%         S(3)/totalPopulation
+%         S(4)/totalPopulation
+%         break;
+%     end
 
     subplot(3, 3, 1);
     pie_1 = pie([S(1)/totalPopulation I(1)/totalPopulation R(1)/totalPopulation], {'Susceptible', 'Infected', 'Recovered'});
