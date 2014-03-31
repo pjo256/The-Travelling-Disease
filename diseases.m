@@ -79,8 +79,8 @@ TravelI6 = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
 % Normal Test Case 7
 % 3 are the highest leaving and lowest coming in
 % 1 city has the maximial travel rates
-TravelSR = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.05 0.05 0 0.05; 0.1 0.1 0.1 0];
-TravelI = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.05 0.05 0 0.05; 0.1 0.1 0.1 0];
+TravelSR7 = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.05 0.05 0 0.05; 0.1 0.1 0.1 0];
+TravelI7 = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.05 0.05 0 0.05; 0.1 0.1 0.1 0];
 
 f = figure('Position', [10 10 450 200], 'name', 'Susceptible or Recovered people travelling from x to y');
 t = uitable('Parent', f, 'Position', [40 15 450 150]);
