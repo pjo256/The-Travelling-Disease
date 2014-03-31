@@ -127,7 +127,7 @@ for clock = 1:clock_max
 
                         biasedSR_i = 1 - biasedSR_j;
                         biasedI_i = 1 - biasedI_j;
-                  
+                        
                         
                         % think
                         %TravelSR(j, i) = (sum(R)+sum(S)) - N(j)*TravelSR(i, j);
@@ -269,4 +269,3 @@ title('City Pop 3');
 subplot(4, 4, 16);
 plot(N_save(4,1:clock))
 title('City Pop 4');
-
