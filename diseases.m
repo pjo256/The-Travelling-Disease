@@ -40,16 +40,62 @@ totalPopulation = sum(N);
 a = [0.15 0.12 0.09 0.11]; % infectivity a = # of new cases per day caused by one infected person.
 b = [0.01 0.01 0.01 0.01]; %time taken to recover per person is 1/b = 20 days, so b = 1/20
 
+% Normal Test Case 1
+% Just a normal travel case where we have established SR(all) > I(all)
+TravelSR1 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; % TravelSR = [0.49; 0.39; 0.64; 0.33];
+TravelI1 = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0]; % TravelI = [0.27; 0.13; 0.24; 0.28];
 
-% TravelSR = [0.49; 0.39; 0.64; 0.33];
-TravelSR = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0];
-% TravelI = [0.27; 0.13; 0.24; 0.28];
-TravelI = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0];
+% Normal Test Case 2
+% Case where SR/I are the same
+TravelSR2 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; % TravelSR = [0.49; 0.39; 0.64; 0.33];
+TravelI2 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; % TravelI = [0.49; 0.39; 0.64; 0.33];
+
+% Normal Test Case 3
+% A universie where I(all) > SR(all) because people who are sick are kicked
+% out of the city and just travel to different cities seeing refuge but no
+% one gives them refuge. 
+TravelSR3 = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0]; % TravelSR = [0.27; 0.13; 0.24; 0.28]; 
+TravelI3 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; % TravelI = [0.49; 0.39; 0.64; 0.33];
+
+% Normal Test Case 4
+% 0 are the highest leaving and lowest coming in
+% all travel rates for eveerything are equal (n = 4 same travel rate)
+TravelSR4 = [0 0.1 0.1 0.1; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
+TravelI4 = [0 0.1 0.1 0.1; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
+
+% Normal Test Case 5
+% 1 are the highest leaving and lowest coming in
+% 3 of them have equal travel rates
+% high number coming in, small number leaving
+TravelSR5 = [0 0.05 0.05 0.05; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
+TravelI5 = [0 0.05 0.05 0.05; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
+
+% Normal Test Case 6
+% 2 are the highest leaving and lowest coming in
+% 2 of them have equal travel rates
+TravelSR6 = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
+TravelI6 = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
+
+% Normal Test Case 7
+% 3 are the highest leaving and lowest coming in
+% 1 city has the maximial travel rates
+TravelSR = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.05 0.05 0 0.05; 0.1 0.1 0.1 0];
+TravelI = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.05 0.05 0 0.05; 0.1 0.1 0.1 0];
+
+f = figure('Position', [10 10 450 200], 'name', 'Susceptible or Recovered people travelling from x to y');
+t = uitable('Parent', f, 'Position', [40 15 450 150]);
+set(t, 'Data', TravelSR);
+set(t, 'ColumnName', {'SR City One', 'SR City Two', 'SR City Three', 'SR City Four'}, 'RowName', {'SR City One', 'SR City Two', 'SR City Three', 'SR City Four'});
+
+mm = figure('Position', [10 10 450 200], 'name', 'Sick people travelling from x to y');
+gg = uitable('Parent', mm, 'Position', [40 15 450 150]);
+set(gg, 'Data', TravelI);
+set(gg, 'ColumnName', {'City One', 'I City Two', 'I City Three', 'I City Four'}, 'RowName', {'I City One', 'I City Two', 'I City Three', 'I City Four'});
+
 %maybe make fixed fraction?
 %probability per unit time?
 %we fix the probability for a person to travel to city j from city i per unit time
 %traffic is a rate!
-
 
 % people coming in
 % inTravel = [0 40 30 5; 10 0 25 14; 9 49 0 14; 19 32 44 0];
@@ -101,10 +147,10 @@ for clock = 1:clock_max
             newlyInfected = 0;
             % So we don't cross the threshold of having everyone recovered
             % before introducing traffic
-            if I(c) >= N(c)/2
-                doneInitializing = true;
-                break;
-            end
+            %if I(c) >= N(c)/2
+            %    doneInitializing = true;
+            %    break;
+            %end
             for s = 1:S(c)
                 if (rand < (dt * a(c) * I(c) / N(c)))
                     dt * a(c) * I(c) / N(c)  
