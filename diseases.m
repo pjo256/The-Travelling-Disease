@@ -26,7 +26,6 @@ S_save = zeros(numCities, clock_max);
 I_save = zeros(numCities, clock_max);
 R_save = zeros(numCities, clock_max);
 
-retention = 0;
 
 N = [1000 500 400 1200];
 S = [999 498 399 1199];
@@ -35,14 +34,21 @@ R = [0 0 0 0];
 
 totalPopulation = sum(N);
 
+%Testing epidemicity
+a = [0.01 0.12 0.09 0.11]; % infectivity a = # of new cases per day caused by one infected person.
+b = [0.01 0.12 0.09 0.11]; %time taken to recover per person is 1/b
+TravelSR = [0 0.15 0.3 0.11; 0.19 0 0.10 0.121; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; 
+TravelI = [0 0.05 0.1 0.09; 0.035 0 0.045 0.095; 0.113 0.042 0 0.091; 0.111 0.112 0.07 0]; 
 
-a = [0.15 0.12 0.09 0.11]; % infectivity a = # of new cases per day caused by one infected person.
-b = [0.01 0.02 0.03 0.021]; %time taken to recover per person is 1/b = 20 days, so b = 1/20
+
+%For immigration rates trials
+%a = [0.15 0.12 0.09 0.11]; 
+%b = [0.01 0.02 0.03 0.021];
 
 % Normal Test Case 1
 % Just a normal travel case where we have established SR(all) > I(all)
-TravelSR1 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; % TravelSR = [0.49; 0.39; 0.64; 0.33];
-TravelI1 = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0]; % TravelI = [0.27; 0.13; 0.24; 0.28];
+TravelSR1 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; 
+TravelI1 = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0];
 
 % Normal Test Case 2
 % Case where SR/I are the same
@@ -66,8 +72,8 @@ TravelI4 = [0 0.1 0.1 0.1; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
 % 1 are the highest leaving and lowest coming in
 % 3 of them have equal travel rates
 % high number coming in, small number leaving
-TravelSR = [0 0.05 0.05 0.05; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
-TravelI = [0 0.05 0.05 0.05; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
+TravelSR5 = [0 0.05 0.05 0.05; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
+TravelI5 = [0 0.05 0.05 0.05; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
 
 % Normal Test Case 6
 % 2 are the highest leaving and lowest coming in
@@ -104,7 +110,6 @@ hold on;
 
 for clock = 1:clock_max
     t = clock * dt;
-    % clock
     % Allow each system to evolve before considering changes in population
     % due to traffic.
     if (clock >= (time_simulated / 8))
@@ -132,9 +137,14 @@ for clock = 1:clock_max
             S(c) = S(c) - newlyInfected;
             I(c) = I(c) + newlyInfected - newlyRecovered;
             R(c) = R(c) + newlyRecovered;
+            
+%             N_save(i, clock) = S(i)+I(i)+R(i);
+%             S_save(i, clock) = S(i);
+%             I_save(i, clock) = I(i);
+%             R_save(i, clock) = R(i);
         end
     end
-
+    
     for i = 1:numCities
         %if doneInitializing
             for j = 1:numCities
@@ -153,12 +163,7 @@ for clock = 1:clock_max
                             %F_R_ij
                             %maybe have F_S_ij = F_R_ij
               
-                     % Aggregate population moving i from to j
-                     %study travel by itself, populations should settle
-                     %down. should be equilibrium populations.
-                     
-                     %Instead of letting SIR evolve first, let travel
-                     %evolve first until approx. settled down populations.
+                   
                      
                      %static travel rate array.
                      %at least 3 cities --> 2 kinds of steady states. every
@@ -219,49 +224,10 @@ for clock = 1:clock_max
                             R(j) = R(j) - 1;
                             R(i) = R(i) + 1;
                          end
-                     end
-                     
-%                      if(S(i) + R(i) + I(i) >= Travel(i, j))
-%                          for k = 1:Travel(i, j)
-%                             prop_s = S(i) / N(i);
-%                             prop_i = I(i) / N(i);
-%                             prop_r = R(i) / N(i);
-%                             rand_num = rand;
-%                             if(rand_num >= 0 && (rand_num <= prop_s && S(i) ~= 0))
-%                                 S(i) = S(i) - 1;
-%                                 S(j) = S(j) + 1;
-%                             elseif(rand_num > prop_s && (rand_num <= prop_s + prop_i && I(i) ~= 0))
-%                                 I(i) = I(i) - 1;
-%                                 I(j) = I(j) + 1;
-%                             elseif(rand_num > prop_s + prop_i && (rand_num <= 1 && R(i) ~= 0))
-%                                 R(i) = R(i) - 1;
-%                                 R(j) = R(j) + 1;
-%                             end
-%                          end
-%                      end
-% 
-%                      % Aggregate population moving from j to i
-%                      if(S(j) + R(j) + I(j) >= Travel(j, i))
-%                          for k = 1:Travel(j, i)
-%                             prop_s = S(j) / N(j);
-%                             prop_i = I(j) / N(j);
-%                             prop_r = R(j) / N(j);                           
-%                             rand_num = rand;
-%                             if(rand_num >= 0 && (rand_num <= prop_s && S(j) ~= 0))
-%                                 S(i) = S(i) + 1;
-%                                 S(j) = S(j) - 1;
-%                             elseif(rand_num > prop_s && (rand_num <= prop_s + prop_i && I(j) ~= 0))
-%                                 I(i) = I(i) + 1;
-%                                 I(j) = I(j) - 1;
-%                             elseif(rand_num > prop_s + prop_i && (rand_num <= 1 && R(j) ~= 0))
-%                                 R(i) = R(i) + 1;
-%                                 R(j) = R(j) - 1;
-%                             end
-%                          end
-%                      end
+                     end                  
                 end
             end
-        %end
+        
         N_save(i, clock) = S(i)+I(i)+R(i);
         S_save(i, clock) = S(i);
         I_save(i, clock) = I(i);
@@ -269,19 +235,6 @@ for clock = 1:clock_max
     end
     
     clf('reset')
-%     
-%     if S(1)/totalPopulation < 0 || S(2)/totalPopulation < 0 || S(3)/totalPopulation < 0 || S(4)/totalPopulation
-%         S(1)
-%         S(2)
-%         S(3)
-%         S(4)
-%         totalPopulation
-%         S(2)/totalPopulation
-%         S(1)/totalPopulation
-%         S(3)/totalPopulation
-%         S(4)/totalPopulation
-%         break;
-%     end
 
     subplot(3, 3, 1);
     pie_1 = pie([S(1)/totalPopulation I(1)/totalPopulation R(1)/totalPopulation], {'Susceptible', 'Infected', 'Recovered'});
