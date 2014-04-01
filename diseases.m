@@ -26,9 +26,7 @@ S_save = zeros(numCities, clock_max);
 I_save = zeros(numCities, clock_max);
 R_save = zeros(numCities, clock_max);
 
-prop_s = 0.0;
-prop_i = 0.0;
-prop_r = 0.0;
+retention = 0;
 
 N = [1000 500 400 1200];
 S = [999 498 399 1199];
@@ -37,8 +35,9 @@ R = [0 0 0 0];
 
 totalPopulation = sum(N);
 
+
 a = [0.15 0.12 0.09 0.11]; % infectivity a = # of new cases per day caused by one infected person.
-b = [0.01 0.01 0.01 0.01]; %time taken to recover per person is 1/b = 20 days, so b = 1/20
+b = [0.01 0.02 0.03 0.021]; %time taken to recover per person is 1/b = 20 days, so b = 1/20
 
 % Normal Test Case 1
 % Just a normal travel case where we have established SR(all) > I(all)
@@ -67,8 +66,8 @@ TravelI4 = [0 0.1 0.1 0.1; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
 % 1 are the highest leaving and lowest coming in
 % 3 of them have equal travel rates
 % high number coming in, small number leaving
-TravelSR5 = [0 0.05 0.05 0.05; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
-TravelI5 = [0 0.05 0.05 0.05; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
+TravelSR = [0 0.05 0.05 0.05; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
+TravelI = [0 0.05 0.05 0.05; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
 
 % Normal Test Case 6
 % 2 are the highest leaving and lowest coming in
@@ -82,37 +81,7 @@ TravelI6 = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
 TravelSR7 = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.05 0.05 0 0.05; 0.1 0.1 0.1 0];
 TravelI7 = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.05 0.05 0 0.05; 0.1 0.1 0.1 0];
 
-f = figure('Position', [10 10 450 200], 'name', 'Susceptible or Recovered people travelling from x to y');
-t = uitable('Parent', f, 'Position', [40 15 450 150]);
-set(t, 'Data', TravelSR);
-set(t, 'ColumnName', {'SR City One', 'SR City Two', 'SR City Three', 'SR City Four'}, 'RowName', {'SR City One', 'SR City Two', 'SR City Three', 'SR City Four'});
-
-mm = figure('Position', [10 10 450 200], 'name', 'Sick people travelling from x to y');
-gg = uitable('Parent', mm, 'Position', [40 15 450 150]);
-set(gg, 'Data', TravelI);
-set(gg, 'ColumnName', {'City One', 'I City Two', 'I City Three', 'I City Four'}, 'RowName', {'I City One', 'I City Two', 'I City Three', 'I City Four'});
-
-%maybe make fixed fraction?
-%probability per unit time?
-%we fix the probability for a person to travel to city j from city i per unit time
-%traffic is a rate!
-
-% people coming in
-% inTravel = [0 40 30 5; 10 0 25 14; 9 49 0 14; 19 32 44 0];
-% people who are leaving from i, j are people coming in from i to j
-% outTravel = [0 0 0 0; 50 0 50 50; 50 50 0 50; 50 50 50 0];
-
-%doneInitializing = false;
 startedTravel = false;
-% so travel to i, i does not work
-% and travel to j, j does not work
-for c = 1:numCities
-    for x = 1:numCities
-       if c == x
-          Travel(c, x) = 0;
-       end
-    end
-end
 
 figure;
 set(gcf, 'double', 'on');
@@ -142,15 +111,10 @@ for clock = 1:clock_max
         startedTravel = true;
     end
         
+        
     if startedTravel                                                                             
         for c = 1:numCities
             newlyInfected = 0;
-            % So we don't cross the threshold of having everyone recovered
-            % before introducing traffic
-            %if I(c) >= N(c)/2
-            %    doneInitializing = true;
-            %    break;
-            %end
             for s = 1:S(c)
                 if (rand < (dt * a(c) * I(c) / N(c)))
                     dt * a(c) * I(c) / N(c)  
@@ -298,7 +262,7 @@ for clock = 1:clock_max
                 end
             end
         %end
-        N_save(i, clock) = [S(i)+I(i)+R(i)];
+        N_save(i, clock) = S(i)+I(i)+R(i);
         S_save(i, clock) = S(i);
         I_save(i, clock) = I(i);
         R_save(i, clock) = R(i);
@@ -341,51 +305,82 @@ end
 
 %Output static data
 figure;
+U = 1.2 * time_simulated;
+
+% --- Susceptible --- %
+L = 1.1 * max(S_save(:));
 subplot(4, 4, 1);
 plot(S_save(1,1:clock))
 title('Susceptible 1');
+axis([0 U 0 L]);
 subplot(4, 4, 2);
 plot(S_save(2,1:clock))
 title('Susceptible 2');
+axis([0 U 0 L]);
 subplot(4, 4, 3);
 plot(S_save(3,1:clock))
 title('Susceptible 3');
+axis([0 U 0 L]);
 subplot(4, 4, 4);
 plot(S_save(4,1:clock))
 title('Susceptible 4');
+axis([0 U 0 L]);
+
+% --- Infected --- %
+L = 1.1 * max(I_save(:));
 subplot(4, 4, 5);
 plot(I_save(1,1:clock))
 title('Infected 1');
+axis([0 U 0 L]);
 subplot(4, 4, 6);
 plot(I_save(2,1:clock))
 title('Infected 2');
+axis([0 U 0 L]);
 subplot(4, 4, 7);
 plot(I_save(3,1:clock))
 title('Infected 3');
+axis([0 U 0 L]);
 subplot(4, 4, 8);
 plot(I_save(4,1:clock))
 title('Infected 4');
+axis([0 U 0 L]);
+
+% --- Recovered --- %
+L = 1.1 * max(R_save(:));
 subplot(4, 4, 9);
 plot(R_save(1,1:clock))
 title('Recovered 1');
+axis([0 U 0 L]);
 subplot(4, 4, 10);
 plot(R_save(2,1:clock))
 title('Recovered 2');
+axis([0 U 0 L]);
 subplot(4, 4, 11);
 plot(R_save(3,1:clock))
 title('Recovered 3');
+axis([0 U 0 L]);
 subplot(4, 4, 12);
 plot(R_save(4,1:clock))
 title('Recovered 4');
+axis([0 U 0 L]);
+
+
+% --- General population --- %
+L = 1.1 * max(N_save(:));
 subplot(4, 4, 13);
 plot(N_save(1,1:clock))
 title('City Pop 1');
+axis([0 U 0 L]);
 subplot(4, 4, 14);
 plot(N_save(2,1:clock))
 title('City Pop 2');
+axis([0 U 0 L]);
 subplot(4, 4, 15);
 plot(N_save(3,1:clock))
 title('City Pop 3');
+axis([0 U 0 L]);
 subplot(4, 4, 16);
 plot(N_save(4,1:clock))
 title('City Pop 4');
+axis([0 U 0 L]);
+
