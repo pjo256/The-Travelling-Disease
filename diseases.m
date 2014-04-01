@@ -178,21 +178,21 @@ for clock = 1:clock_max
                      
                      % i -> j                     
                      for s = 1:S(i)
-                        if rand < TravelSR(i, j) && (S(i) ~= 0)
+                        if rand < (TravelSR(i, j) * dt) && (S(i) ~= 0)
                             S(i) = S(i) - 1;
                             S(j) = S(j) + 1;
                         end
                      end                     
                      
                      for inf = 1:I(i)
-                        if rand < TravelI(i, j) && (I(i) ~= 0)
+                        if rand < (TravelI(i, j) * dt) && (I(i) ~= 0)
                             I(i) = I(i) - 1;
                             I(j) = I(j) + 1;
                         end
                      end                   
                      
                      for r = 1:R(i)
-                         if rand < TravelSR(i, j) && (R(i) ~= 0)
+                         if rand < (TravelSR(i, j) * dt) && (R(i) ~= 0)
                              R(i) = R(i) - 1;
                              R(j) = R(j) + 1;
                          end
@@ -201,21 +201,21 @@ for clock = 1:clock_max
                      % j -> i
                      
                      for s = 1:S(j)
-                        if rand < TravelSR(j, i) && (S(j) ~= 0)
+                        if rand < (TravelSR(j, i) * dt) && (S(j) ~= 0)
                             S(j) = S(j) - 1;
                             S(i) = S(i) + 1;
                         end
                      end                     
                      
                      for inf = 1:I(j)
-                        if rand < TravelI(j, i) && (I(j) ~= 0)
+                        if rand < (TravelI(j, i) * dt) && (I(j) ~= 0)
                             I(j) = I(j) - 1;
                             I(i) = I(i) + 1;
                         end
                      end
                      
                      for r = 1:R(j)
-                         if rand < TravelSR(j, i) && (R(j) ~= 0)
+                         if rand < (TravelSR(j, i) * dt) && (R(j) ~= 0)
                             R(j) = R(j) - 1;
                             R(i) = R(i) + 1;
                          end
