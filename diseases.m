@@ -17,8 +17,8 @@ clf;
 close all;
 
 numCities = 4;
-time_simulated = 365; %number of days
-clock_max = 365; %divide number of days into quarter-day intervals
+time_simulated = 365 * 2; %number of days
+clock_max = 365 * 2; %divide number of days into quarter-day intervals
 dt = time_simulated / clock_max;
 
 N_save = zeros(numCities, clock_max);
@@ -35,10 +35,10 @@ R = [0 0 0 0];
 totalPopulation = sum(N);
 
 %Testing epidemicity
-a = [0.01 0.12 0.09 0.11]; % infectivity a = # of new cases per day caused by one infected person.
-b = [0.01 0.12 0.09 0.11]; %time taken to recover per person is 1/b
-TravelSR = [0 0.15 0.3 0.11; 0.19 0 0.10 0.121; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; 
-TravelI = [0 0.05 0.1 0.09; 0.035 0 0.045 0.095; 0.113 0.042 0 0.091; 0.111 0.112 0.07 0]; 
+a = [0.05 0.15 0.3 0.28]; % infectivity a = # of new cases per day caused by one infected person.
+b = [0.07 0.03 0.06 0.04]; %time taken to recover per person is 1/b
+TravelSR = [0 0.15 0.3 0.11; 0.19 0 0.133 0.121; 0.29 0.15 0 0.20; 0.13 0.2 0.25 0]; 
+TravelI = [0 0.05 0.1 0.09; 0. 0.131 0.086 0.095; 0.113 0.13 0 0.14; 0.128 0.097 0.125 0]; 
 
 
 %For immigration rates trials
@@ -122,14 +122,12 @@ for clock = 1:clock_max
             newlyInfected = 0;
             for s = 1:S(c)
                 if (rand < (dt * a(c) * I(c) / N(c)))
-                    dt * a(c) * I(c) / N(c)  
                     newlyInfected = newlyInfected + 1;
                 end
             end
             newlyRecovered = 0;
             for i = 1:I(c)
                 if (rand < dt * b(c))
-                    dt * b(c)
                     newlyRecovered = newlyRecovered + 1;
                 end
             end
@@ -183,21 +181,21 @@ for clock = 1:clock_max
                      
                      % i -> j                     
                      for s = 1:S(i)
-                        if rand < (TravelSR(i, j) * dt) && (S(i) ~= 0)
+                        if rand < (TravelSR(i, j) * dt) && (S(i) ~= 0 && (sum(N) >= sum(R(j) + I(j) + S(j))))
                             S(i) = S(i) - 1;
                             S(j) = S(j) + 1;
                         end
                      end                     
                      
                      for inf = 1:I(i)
-                        if rand < (TravelI(i, j) * dt) && (I(i) ~= 0)
+                        if rand < (TravelI(i, j) * dt) && (I(i) ~= 0 && (sum(N) >= sum(R(j) + I(j) + S(j))))
                             I(i) = I(i) - 1;
                             I(j) = I(j) + 1;
                         end
                      end                   
                      
                      for r = 1:R(i)
-                         if rand < (TravelSR(i, j) * dt) && (R(i) ~= 0)
+                         if rand < (TravelSR(i, j) * dt) && (R(i) ~= 0 && (sum(N) >= sum(R(j) + I(j) + S(j))))
                              R(i) = R(i) - 1;
                              R(j) = R(j) + 1;
                          end
@@ -206,21 +204,21 @@ for clock = 1:clock_max
                      % j -> i
                      
                      for s = 1:S(j)
-                        if rand < (TravelSR(j, i) * dt) && (S(j) ~= 0)
+                        if rand < (TravelSR(j, i) * dt) && (S(j) ~= 0 && (sum(N) >= sum(R(i) + I(i) + S(i))))
                             S(j) = S(j) - 1;
                             S(i) = S(i) + 1;
                         end
                      end                     
                      
                      for inf = 1:I(j)
-                        if rand < (TravelI(j, i) * dt) && (I(j) ~= 0)
+                        if rand < (TravelI(j, i) * dt) && (I(j) ~= 0 && (sum(N) >= sum(R(i) + I(i) + S(i))))
                             I(j) = I(j) - 1;
                             I(i) = I(i) + 1;
                         end
                      end
                      
                      for r = 1:R(j)
-                         if rand < (TravelSR(j, i) * dt) && (R(j) ~= 0)
+                         if rand < (TravelSR(j, i) * dt) && (R(j) ~= 0 && (sum(N) >= sum(R(i) + I(i) + S(i))))
                             R(j) = R(j) - 1;
                             R(i) = R(i) + 1;
                          end
