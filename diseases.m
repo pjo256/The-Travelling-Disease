@@ -34,11 +34,31 @@ R = [0 0 0 0];
 
 totalPopulation = sum(N);
 
-%Testing epidemicity
-a = [0.05 0.15 0.3 0.28]; % infectivity a = # of new cases per day caused by one infected person.
-b = [0.07 0.03 0.06 0.04]; %time taken to recover per person is 1/b
+%Testing epidemicity e = 1
+a2 = [0.05 0.02 0.3 0.28]; % infectivity a = # of new cases per day caused by one infected person. %time taken to recover per person is 1/b
+a1 = [0.05 0.02 0.04 0.28];
+a3 = [0.05 0.15 0.3 0.28];
+%b = [0.07 0.03 0.06 0.04];
+
+
+
+
+%Testing thresholds
+a = [0.07 0.03 0.06 0.04];
+b = [0.07 0.03 0.06 0.04];
 TravelSR = [0 0.15 0.3 0.11; 0.19 0 0.133 0.121; 0.29 0.15 0 0.20; 0.13 0.2 0.25 0]; 
 TravelI = [0 0.05 0.1 0.09; 0. 0.131 0.086 0.095; 0.113 0.13 0 0.14; 0.128 0.097 0.125 0]; 
+
+k = 40;
+%k = 60;
+for i = 1:numCities
+    for j = 1:numCities
+        if (i ~= j)
+            TravelSR(i, j) = TravelSR(i, j) + k * 0.003;
+            %TravelI(i, j) = TravelI(i, j) + k * 0.003;
+        end
+    end
+end
 
 
 %For immigration rates trials
@@ -106,6 +126,7 @@ title(strcat('City 4, a = ', num2str(a(4)), ', b = ', num2str(b(4))));
 subplot(3, 3, 5);
 pie_5 = pie([(S(4)/totalPopulation + S(3)/totalPopulation + S(2)/totalPopulation + S(1)/totalPopulation) (I(4)/totalPopulation + I(3)/totalPopulation + I(2)/totalPopulation + I(1)/totalPopulation) (R(4)/totalPopulation + R(3)/totalPopulation + R(2)/totalPopulation + R(1)/totalPopulation)], {'Susceptible', 'Infected', 'Recovered'});
 title('Global');
+drawnow;
 hold on;
 
 for clock = 1:clock_max
@@ -114,8 +135,10 @@ for clock = 1:clock_max
     % due to traffic.
     if (clock >= (time_simulated / 8))
         startedTravel = true;
+    %See initial distribution before travel starts    
+    elseif (clock <= 20)
+        continue;
     end
-        
         
     if startedTravel                                                                             
         for c = 1:numCities
@@ -136,13 +159,13 @@ for clock = 1:clock_max
             I(c) = I(c) + newlyInfected - newlyRecovered;
             R(c) = R(c) + newlyRecovered;
             
-%             N_save(i, clock) = S(i)+I(i)+R(i);
-%             S_save(i, clock) = S(i);
-%             I_save(i, clock) = I(i);
-%             R_save(i, clock) = R(i);
+%              N_save(c, clock) = S(c)+I(c)+R(c);
+%              S_save(c, clock) = S(c);
+%              I_save(c, clock) = I(c);
+%              R_save(c, clock) = R(c);
         end
     end
-    
+   
     for i = 1:numCities
         %if doneInitializing
             for j = 1:numCities
@@ -231,6 +254,7 @@ for clock = 1:clock_max
         I_save(i, clock) = I(i);
         R_save(i, clock) = R(i);
     end
+    
     
     clf('reset')
 
