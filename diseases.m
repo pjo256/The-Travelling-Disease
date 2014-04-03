@@ -281,7 +281,7 @@ end
 %Output static data
 figure;
 U = 1.2 * time_simulated;
-
+set(gcf, 'double', 'on');
 % --- Susceptible --- %
 L = 1.1 * max(S_save(:));
 subplot(4, 4, 1);
