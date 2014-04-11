@@ -32,6 +32,10 @@ b = [0.07 0.03 0.06 0.04];
 TravelSR = [0 0.1 0.22 0.09; 0.19 0 0.10 0.10; 0.21 0.15 0 0.20; 0.1 0.2 0.03 0]; 
 TravelI = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0];
 
+%Testing R_0 > 1, e = 1.
+%TravelSR = [0 0.013 0.027 0.03; 0.032 0 0.022 0.016; 0.015 0.04 0 0.05; 0.067 0.076 0.045 0]; 
+%TravelI = [0 0.012 0.018 0.019; 0.01 0 0.03 0.09; 0.08 0.05 0 0.011; 0.051 0.042 0.017 0];
+
 k = 100;
 for i = 1:numCities
     for j = 1:numCities
@@ -45,6 +49,7 @@ end
 
 
 startedTravel = false;
+infectedCounter = 0;
 
 figure;
 set(gcf, 'double', 'on');
@@ -78,6 +83,7 @@ for clock = 1:clock_max
             for s = 1:S(c)
                 if (rand < (dt * a(c) * I(c) / N(c)))
                     newlyInfected = newlyInfected + 1;
+                    counter = counter + 1;
                 end
             end
             newlyRecovered = 0;
@@ -149,11 +155,6 @@ for clock = 1:clock_max
                 
             end
         
-%          N_save(i, clock) = S(i)+I(i)+R(i);
-%          S_save(i, clock) = S(i);
-%          I_save(i, clock) = I(i);
-%          R_save(i, clock) = R(i);
-%          I_peaks(1, clock) = I_save(i,  clock) + I_peaks(1, clock);
     end
     
     for i = 1:numCities
