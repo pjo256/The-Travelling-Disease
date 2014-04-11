@@ -166,59 +166,28 @@ for clock = 1:clock_max
         end
     end
    
-    for i = 1:numCities
-        %if doneInitializing
-            for j = 1:numCities
+   for i = 1:numCities
+            for j = i+1:numCities
                 % Count traffic entering and leaving city i
                 if(i ~= j)
-                    %for each pair, loop into all people in city i
-                        %loop over all susceptible, give them a chance to
-                        %travel
-                        %loop over all infected, give them a chance to
-                        %travel
-                        % . . .
-                        %three matrices.
-                            %
-                            %F_S_ij
-                            %F_I_ij
-                            %F_R_ij
-                            %maybe have F_S_ij = F_R_ij
-              
-                   
-                     
-                     %static travel rate array.
-                     %at least 3 cities --> 2 kinds of steady states. every
-                     %path balanced by its own path. detail balance -->
-                     %paths equal.
-                     %set up probabilities so only possible to go in cycle.
-                     %it'll settle down, there is no reverse path. 
-                     
-                     %principle of detail balance.
-                     
-                     %a nice complication 
-                     %travel rates depends on level of infection at each
-                     %time step
-                     %get it working for static rates
-                     %make it proportional to I(c)/N(c)
-                     
-                     
-                     % i -> j                     
+                     % i -> j      
+                     initS = S(i);
                      for s = 1:S(i)
-                        if rand < (TravelSR(i, j) * dt) && (S(i) ~= 0 && (sum(N) >= sum(R(j) + I(j) + S(j))))
+                        if rand < (TravelSR(i, j) * dt) && (S(i) ~= 0 && (sum(N) >= R(j) + I(j) + S(j)))
                             S(i) = S(i) - 1;
                             S(j) = S(j) + 1;
                         end
                      end                     
                      
                      for inf = 1:I(i)
-                        if rand < (TravelI(i, j) * dt) && (I(i) ~= 0 && (sum(N) >= sum(R(j) + I(j) + S(j))))
+                        if rand < (TravelI(i, j) * dt) && (I(i) ~= 0 && (sum(N) >= R(j) + I(j) + S(j)))
                             I(i) = I(i) - 1;
                             I(j) = I(j) + 1;
                         end
                      end                   
                      
                      for r = 1:R(i)
-                         if rand < (TravelSR(i, j) * dt) && (R(i) ~= 0 && (sum(N) >= sum(R(j) + I(j) + S(j))))
+                         if rand < (TravelSR(i, j) * dt) && (R(i) ~= 0 && (sum(N) >= R(j) + I(j) + S(j)))
                              R(i) = R(i) - 1;
                              R(j) = R(j) + 1;
                          end
@@ -227,32 +196,43 @@ for clock = 1:clock_max
                      % j -> i
                      
                      for s = 1:S(j)
-                        if rand < (TravelSR(j, i) * dt) && (S(j) ~= 0 && (sum(N) >= sum(R(i) + I(i) + S(i))))
+                        if rand < (TravelSR(j, i) * dt) && (S(j) ~= 0 && (sum(N) >= R(i) + I(i) + S(i)))
                             S(j) = S(j) - 1;
                             S(i) = S(i) + 1;
                         end
                      end                     
                      
+                     newS = S(i);
                      for inf = 1:I(j)
-                        if rand < (TravelI(j, i) * dt) && (I(j) ~= 0 && (sum(N) >= sum(R(i) + I(i) + S(i))))
+                        if rand < (TravelI(j, i) * dt) && (I(j) ~= 0 && (sum(N) >= R(i) + I(i) + S(i)))
                             I(j) = I(j) - 1;
                             I(i) = I(i) + 1;
                         end
                      end
                      
                      for r = 1:R(j)
-                         if rand < (TravelSR(j, i) * dt) && (R(j) ~= 0 && (sum(N) >= sum(R(i) + I(i) + S(i))))
+                         if rand < (TravelSR(j, i) * dt) && (R(j) ~= 0 && (sum(N) >= R(i) + I(i) + S(i)))
                             R(j) = R(j) - 1;
                             R(i) = R(i) + 1;
                          end
-                     end                  
+                     end            
                 end
+                
             end
         
-        N_save(i, clock) = S(i)+I(i)+R(i);
-        S_save(i, clock) = S(i);
-        I_save(i, clock) = I(i);
-        R_save(i, clock) = R(i);
+%          N_save(i, clock) = S(i)+I(i)+R(i);
+%          S_save(i, clock) = S(i);
+%          I_save(i, clock) = I(i);
+%          R_save(i, clock) = R(i);
+%          I_peaks(1, clock) = I_save(i,  clock) + I_peaks(1, clock);
+    end
+    
+    for i = 1:numCities
+         N_save(i, clock) = S(i)+I(i)+R(i);
+         S_save(i, clock) = S(i);
+         I_save(i, clock) = I(i);
+         R_save(i, clock) = R(i);
+         I_peaks(1, clock) = I_save(i,  clock) + I_peaks(1, clock);
     end
     
     
