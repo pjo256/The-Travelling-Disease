@@ -1,4 +1,3 @@
-
 % Observations:
 % There is always one city whose number of infections goes down
 % It's the city with the travel rates the smallest
@@ -26,6 +25,7 @@ N_save = zeros(numCities, clock_max);
 S_save = zeros(numCities, clock_max);
 I_save = zeros(numCities, clock_max);
 R_save = zeros(numCities, clock_max);
+I_peaks = zeros(1, clock_max);
 
 prop_s = 0.0;
 prop_i = 0.0;
@@ -112,7 +112,7 @@ for clock = 1:clock_max
     end
 
     for i = 1:numCities
-            for j = 1:numCities
+            for j = i+1:numCities
                 % Count traffic entering and leaving city i
                 if(i ~= j)
                     
@@ -143,21 +143,21 @@ for clock = 1:clock_max
                     
                      % i -> j                     
                      for s = 1:S(i)
-                        if rand < biasedSR_j && (S(i) ~= 0)
+                        if rand < biasedSR_j && (S(i) ~= 0) && (sum(N) >= R(j) + I(j) + S(j)))
                             S(i) = S(i) - 1;
                             S(j) = S(j) + 1;
                         end
                      end                     
                      
                      for inf = 1:I(i)
-                        if rand < biasedI_j && (I(i) ~= 0)
+                        if rand < biasedI_j && (I(i) ~= 0) && (sum(N) >= R(j) + I(j) + S(j)))
                             I(i) = I(i) - 1;
                             I(j) = I(j) + 1;
                         end
                      end                   
                      
                      for r = 1:R(i)
-                         if rand < biasedSR_j && (R(i) ~= 0)
+                         if rand < biasedSR_j && (R(i) ~= 0) && (sum(N) >= R(j) + I(j) + S(j)))
                              R(i) = R(i) - 1;
                              R(j) = R(j) + 1;
                          end
@@ -166,21 +166,21 @@ for clock = 1:clock_max
                      % j -> i
                      
                      for s = 1:S(j)
-                        if rand < biasedSR_i && (S(j) ~= 0)
+                        if rand < biasedSR_i && (S(j) ~= 0) && (sum(N) >= R(i) + I(i) + S(i))
                             S(j) = S(j) - 1;
                             S(i) = S(i) + 1;
                         end
                      end                     
                      
                      for inf = 1:I(j)
-                        if rand < biasedI_i && (I(j) ~= 0)
+                        if rand < biasedI_i && (I(j) ~= 0) && (sum(N) >= R(i) + I(i) + S(i))
                             I(j) = I(j) - 1;
                             I(i) = I(i) + 1;
                         end
                      end
                      
                      for r = 1:R(j)
-                         if rand < biasedSR_i && (R(j) ~= 0)
+                         if rand < biasedSR_i && (R(j) ~= 0) && (sum(N) >= R(i) + I(i) + S(i))
                             R(j) = R(j) - 1;
                             R(i) = R(i) + 1;
                          end
@@ -191,10 +191,18 @@ for clock = 1:clock_max
                 end
             end
             
-        N_save(i, clock) = [S(i)+I(i)+R(i)];
-        S_save(i, clock) = S(i);
-        I_save(i, clock) = I(i);
-        R_save(i, clock) = R(i);
+        %N_save(i, clock) = [S(i)+I(i)+R(i)];
+        %S_save(i, clock) = S(i);
+        %I_save(i, clock) = I(i);
+        %R_save(i, clock) = R(i);
+    end
+    
+    for i = 1:numCities
+         N_save(i, clock) = S(i)+I(i)+R(i);
+         S_save(i, clock) = S(i);
+         I_save(i, clock) = I(i);
+         R_save(i, clock) = R(i);
+         I_peaks(1, clock) = I_save(i,  clock) + I_peaks(1, clock);
     end
     
     clf('reset')
