@@ -1,4 +1,3 @@
-
 clear all; 
 clf;
 close all;
@@ -103,7 +102,7 @@ for clock = 1:clock_max
     t = clock * dt;
     % Allow each system to evolve before considering changes in population
     % due to traffic.
-    if (clock >= (time_simulated / 8))
+    if (t >= (time_simulated / 8))
         startedTravel = true;
     %See initial distribution before travel starts    
     elseif (clock <= 20)
