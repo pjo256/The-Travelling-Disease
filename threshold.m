@@ -28,7 +28,6 @@ totalPopulation = sum(N);
 %Testing thresholds
 a = [0.07 0.03 0.06 0.04];
 b = [0.07 0.03 0.06 0.04];
-
 TravelSR = [0 0.1 0.22 0.09; 0.19 0 0.10 0.10; 0.21 0.15 0 0.20; 0.1 0.2 0.03 0]; 
 TravelI = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0];
 
@@ -36,7 +35,7 @@ TravelI = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0
 %TravelSR = [0 0.013 0.027 0.03; 0.032 0 0.022 0.016; 0.015 0.04 0 0.05; 0.067 0.076 0.045 0]; 
 %TravelI = [0 0.012 0.018 0.019; 0.01 0 0.03 0.09; 0.08 0.05 0 0.011; 0.051 0.042 0.017 0];
 
-k = 100;
+k = 50;
 for i = 1:numCities
     for j = 1:numCities
         if (i ~= j)
@@ -103,7 +102,7 @@ for clock = 1:clock_max
     
     for i = 1:numCities
             for j = i+1:numCities
-                % Count traffic entering and leaving city i
+                % Count traffic entering and leaving tuple (i, j)
                 if(i ~= j)
                      % i -> j      
                      initS = S(i);
