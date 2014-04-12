@@ -68,7 +68,7 @@ hold on;
 
 for clock = 1:clock_max
     t = clock * dt;
-    if (clock >= (time_simulated / 8))
+    if (t >= (time_simulated / 8))
         startedTravel = true;
     end
         
