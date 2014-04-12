@@ -1,16 +1,3 @@
-% Observations:
-% There is always one city whose number of infections goes down
-% It's the city with the travel rates the smallest
-
-% There are cities where the Recovery rates are going down as even
-% Recovered people are moving between the cities. 
-
-% Learning:
-% && - AND
-
-% CHARTS:
-% PIE CHART FOR EACH CITY TO SHOW S, I, R
-% 4 CIRCLES AND MOVE IN AND OUT OF EACH CIRCLE
 
 clear all; 
 clf;
@@ -18,7 +5,7 @@ close all;
 
 numCities = 4;
 time_simulated = 365 * 2; %number of days
-clock_max = 365 * 2; %divide number of days into quarter-day intervals
+clock_max = 365 * 2; %divide number of days into day intervals
 dt = time_simulated / clock_max;
 
 N_save = zeros(numCities, clock_max);
@@ -35,7 +22,7 @@ R = [0 0 0 0];
 
 totalPopulation = sum(N);
 
-%Testing epidemicity e = 1
+%Testing epidemicity e = 1,2, 3
 a2 = [0.05 0.02 0.3 0.28]; % infectivity a = # of new cases per day caused by one infected person. %time taken to recover per person is 1/b
 a1 = [0.05 0.02 0.04 0.28];
 a3 = [0.05 0.15 0.3 0.28];
@@ -44,44 +31,26 @@ a3 = [0.05 0.15 0.3 0.28];
 
 
 
-%Testing thresholds
-a = [0.07 0.03 0.06 0.04];
-b = [0.07 0.03 0.06 0.04];
-TravelSR = [0 0.15 0.3 0.11; 0.19 0 0.133 0.121; 0.29 0.15 0 0.20; 0.13 0.2 0.25 0]; 
-TravelI = [0 0.05 0.1 0.09; 0. 0.131 0.086 0.095; 0.113 0.13 0 0.14; 0.128 0.097 0.125 0]; 
-
-k = 40;
-%k = 60;
-for i = 1:numCities
-    for j = 1:numCities
-        if (i ~= j)
-            TravelSR(i, j) = TravelSR(i, j) + k * 0.003;
-            %TravelI(i, j) = TravelI(i, j) + k * 0.003;
-        end
-    end
-end
-
-
-%For immigration rates trials
-%a = [0.15 0.12 0.09 0.11]; 
-%b = [0.01 0.02 0.03 0.021];
-
-% Normal Test Case 1
+% Default rates
 % Just a normal travel case where we have established SR(all) > I(all)
-TravelSR1 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; 
-TravelI1 = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0];
+TravelSR = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; 
+TravelI = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0];
+a = [0.15 0.12 0.09 0.11];
+b = [0.01 0.01 0.01 0.01];
 
+
+%F_SR > F_I, F_SR = F_I, F_SR < F_I
 % Normal Test Case 2
 % Case where SR/I are the same
-TravelSR2 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; % TravelSR = [0.49; 0.39; 0.64; 0.33];
-TravelI2 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; % TravelI = [0.49; 0.39; 0.64; 0.33];
+TravelSR2 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; 
+TravelI2 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; 
 
 % Normal Test Case 3
-% A universie where I(all) > SR(all) because people who are sick are kicked
+% A scenario where I(all) > SR(all) because people who are sick are kicked
 % out of the city and just travel to different cities seeing refuge but no
 % one gives them refuge. 
-TravelSR3 = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0]; % TravelSR = [0.27; 0.13; 0.24; 0.28]; 
-TravelI3 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; % TravelI = [0.49; 0.39; 0.64; 0.33];
+TravelSR3 = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0];
+TravelI3 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0]; 
 
 % Normal Test Case 4
 % 0 are the highest leaving and lowest coming in
@@ -89,20 +58,20 @@ TravelI3 = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0];
 TravelSR4 = [0 0.1 0.1 0.1; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
 TravelI4 = [0 0.1 0.1 0.1; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
 
-% Normal Test Case 5
+% n = 1
 % 1 are the highest leaving and lowest coming in
 % 3 of them have equal travel rates
 % high number coming in, small number leaving
 TravelSR5 = [0 0.05 0.05 0.05; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
 TravelI5 = [0 0.05 0.05 0.05; 0.1 0 0.1 0.1; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
 
-% Normal Test Case 6
+% n = 2
 % 2 are the highest leaving and lowest coming in
 % 2 of them have equal travel rates
 TravelSR6 = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
 TravelI6 = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.1 0.1 0 0.1; 0.1 0.1 0.1 0];
 
-% Normal Test Case 7
+% n = 3
 % 3 are the highest leaving and lowest coming in
 % 1 city has the maximial travel rates
 TravelSR7 = [0 0.05 0.05 0.05; 0.05 0 0.05 0.05; 0.05 0.05 0 0.05; 0.1 0.1 0.1 0];
@@ -220,12 +189,6 @@ for clock = 1:clock_max
                 end
                 
             end
-        
-%          N_save(i, clock) = S(i)+I(i)+R(i);
-%          S_save(i, clock) = S(i);
-%          I_save(i, clock) = I(i);
-%          R_save(i, clock) = R(i);
-%          I_peaks(1, clock) = I_save(i,  clock) + I_peaks(1, clock);
     end
     
     for i = 1:numCities
