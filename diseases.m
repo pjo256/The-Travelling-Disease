@@ -104,13 +104,13 @@ for clock = 1:clock_max
     % due to traffic.
     if (t >= (time_simulated / 8))
         startedTravel = true;
-    %See initial distribution before travel starts    
-    elseif (clock <= 20)
-        continue;
     end
         
     if startedTravel                                                                             
         for c = 1:numCities
+            %Consider each susceptible, infected, and recovered individual
+            %Probabilistically move from S to I or from I to R
+            
             newlyInfected = 0;
             for s = 1:S(c)
                 if (rand < (dt * a(c) * I(c) / N(c)))
@@ -128,21 +128,19 @@ for clock = 1:clock_max
             I(c) = I(c) + newlyInfected - newlyRecovered;
             R(c) = R(c) + newlyRecovered;
             
-%              N_save(c, clock) = S(c)+I(c)+R(c);
-%              S_save(c, clock) = S(c);
-%              I_save(c, clock) = I(c);
-%              R_save(c, clock) = R(c);
         end
     end
    
    for i = 1:numCities
             for j = i+1:numCities
-                % Count traffic entering and leaving city i
+                % Count traffic entering and leaving city ordered tuple (i, j)
                 if(i ~= j)
                      % i -> j      
                      initS = S(i);
                      for s = 1:S(i)
                         if rand < (TravelSR(i, j) * dt) && (S(i) ~= 0 && (sum(N) >= R(j) + I(j) + S(j)))
+                            %Only move from i to j if bounds allow one person to be removed from i and one person 
+                            %to be addded to j
                             S(i) = S(i) - 1;
                             S(j) = S(j) + 1;
                         end
@@ -198,7 +196,7 @@ for clock = 1:clock_max
          I_peaks(1, clock) = I_save(i,  clock) + I_peaks(1, clock);
     end
     
-    
+    %Draw pie chart
     clf('reset')
 
     subplot(3, 3, 1);
