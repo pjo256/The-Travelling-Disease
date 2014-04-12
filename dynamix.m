@@ -78,7 +78,7 @@ for clock = 1:clock_max
     % clock
     % Allow each system to evolve before considering changes in population
     % due to traffic.
-    if (clock >= (time_simulated / 8))
+    if (t >= (time_simulated / 8))
         startedTravel = true;
     end
         
