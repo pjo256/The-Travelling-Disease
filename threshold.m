@@ -21,7 +21,7 @@ R = [0 0 0 0];
 
 totalPopulation = sum(N);
 
-%Testing thresholds
+%Testing thresholds, R_0 = 1.
 a = [0.07 0.03 0.06 0.04];
 b = [0.07 0.03 0.06 0.04];
 TravelSR = [0 0.1 0.22 0.09; 0.19 0 0.10 0.10; 0.21 0.15 0 0.20; 0.1 0.2 0.03 0]; 
@@ -74,7 +74,10 @@ for clock = 1:clock_max
         
     if startedTravel                                                                             
         for c = 1:numCities
+            %Consider each susceptible, infected, and recovered individual
+            %Probabilistically move from S to I or from I to R
             newlyInfected = 0;
+            
             for s = 1:S(c)
                 if (rand < (dt * a(c) * I(c) / N(c)))
                     newlyInfected = newlyInfected + 1;
@@ -98,12 +101,14 @@ for clock = 1:clock_max
     
     for i = 1:numCities
             for j = i+1:numCities
-                % Count traffic entering and leaving tuple (i, j)
+                % Count traffic entering and leaving ordered tuple (i, j)
                 if(i ~= j)
                      % i -> j      
                      initS = S(i);
                      for s = 1:S(i)
                         if rand < (TravelSR(i, j) * dt) && (S(i) ~= 0 && (sum(N) >= R(j) + I(j) + S(j)))
+                            %Only move from i to j if bounds allow one person to be removed from i and one person 
+                            %to be addded to j
                             S(i) = S(i) - 1;
                             S(j) = S(j) + 1;
                         end
@@ -160,7 +165,7 @@ for clock = 1:clock_max
          I_peaks(1, clock) = I_save(i,  clock) + I_peaks(1, clock);
     end
     
-    
+    %Draw pie charts
     clf('reset')
 
     subplot(3, 3, 1);
