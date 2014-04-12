@@ -12,10 +12,6 @@ S_save = zeros(numCities, clock_max);
 I_save = zeros(numCities, clock_max);
 R_save = zeros(numCities, clock_max);
 
-gsus = zeros(1, clock_max);
-ginf = zeros(1, clock_max);
-grec = zeros(1, clock_max);
-
 I_peaks = zeros(1, clock_max);
 
 N = [1000 500 400 1200];
