@@ -1,16 +1,3 @@
-% Observations:
-% There is always one city whose number of infections goes down
-% It's the city with the travel rates the smallest
-
-% There are cities where the Recovery rates are going down as even
-% Recovered people are moving between the cities. 
-
-% Learning:
-% && - AND
-
-% CHARTS:
-% PIE CHART FOR EACH CITY TO SHOW S, I, R
-% 4 CIRCLES AND MOVE IN AND OUT OF EACH CIRCLE
 
 clear all; 
 clf;
@@ -18,7 +5,7 @@ close all;
 
 numCities = 4;
 time_simulated = 365; %number of days
-clock_max = 365; %divide number of days into quarter-day intervals
+clock_max = 365; %divide number of days into day intervals
 dt = time_simulated / clock_max;
 
 N_save = zeros(numCities, clock_max);
@@ -26,10 +13,6 @@ S_save = zeros(numCities, clock_max);
 I_save = zeros(numCities, clock_max);
 R_save = zeros(numCities, clock_max);
 I_peaks = zeros(1, clock_max);
-
-prop_s = 0.0;
-prop_i = 0.0;
-prop_r = 0.0;
 
 N = [1000 500 400 1200];
 S = [999 498 399 1199];
@@ -39,17 +22,11 @@ R = [0 0 0 0];
 totalPopulation = sum(N);
 
 a = [0.15 0.12 0.09 0.11]; % infectivity a = # of new cases per day caused by one infected person.
-b = [0.01 0.01 0.01 0.01]; %time taken to recover per person is 1/b = 20 days, so b = 1/20
+b = [0.01 0.01 0.01 0.01]; %time taken to recover per person is 1/b.
 
 
-% TravelSR = [0.49; 0.39; 0.64; 0.33];
 TravelSR = [0 0.1 0.3 0.09; 0.19 0 0.10 0.10; 0.29 0.15 0 0.20; 0.1 0.2 0.03 0];
-% TravelI = [0.27; 0.13; 0.24; 0.28];
 TravelI = [0 0.05 0.1 0.12; 0.01 0 0.03 0.09; 0.11 0.04 0 0.09; 0.11 0.10 0.07 0];
-%maybe make fixed fraction?
-%probability per unit time?
-%we fix the probability for a person to travel to city j from city i per unit time
-%traffic is a rate!
 
 
 startedTravel = false;
@@ -75,7 +52,6 @@ hold on;
 
 for clock = 1:clock_max
     t = clock * dt;
-    % clock
     % Allow each system to evolve before considering changes in population
     % due to traffic.
     if (t >= (time_simulated / 8))
@@ -84,13 +60,11 @@ for clock = 1:clock_max
         
     if startedTravel                                                                             
         for c = 1:numCities
+            %Consider each susceptible, infected, and recovered individual
+            %Probabilistically move from S to I or from I to R
+            
             newlyInfected = 0;
-            % So we don't cross the threshold of having everyone recovered
-            % before introducing traffic
-%             if I(c) >= N(c)/2
-%                 doneInitializing = true;
-%                 break;
-%             end
+           
             for s = 1:S(c)
                 if (rand < (dt * a(c) * I(c) / N(c)))
                     dt * a(c) * I(c) / N(c)  
@@ -113,7 +87,7 @@ for clock = 1:clock_max
 
     for i = 1:numCities
             for j = i+1:numCities
-                % Count traffic entering and leaving city i
+                 % Count traffic entering and leaving ordered tuple (i, j)
                 if(i ~= j)
                     
                     biasedSR_j = 0;
@@ -128,11 +102,8 @@ for clock = 1:clock_max
                         biasedSR_i = 1 - biasedSR_j;
                         biasedI_i = 1 - biasedI_j;
                         
-                        
-                        % think
-                        %TravelSR(j, i) = (sum(R)+sum(S)) - N(j)*TravelSR(i, j);
-                        %TravelI(j, i) = sum(I) - N(j)*TravelI(i, j);
                     else
+                        %Resume static rates
                         biasedSR_j = TravelSR(i, j);
                         biastedI_j = TravelI(i, j);
 
@@ -144,6 +115,8 @@ for clock = 1:clock_max
                      % i -> j                     
                      for s = 1:S(i)
                         if rand < biasedSR_j && (S(i) ~= 0) && (sum(N) >= R(j) + I(j) + S(j)))
+                            %Only move from i to j if bounds allow one person to be removed from i and one person 
+                            %to be addded to j
                             S(i) = S(i) - 1;
                             S(j) = S(j) + 1;
                         end
@@ -186,15 +159,8 @@ for clock = 1:clock_max
                          end
                      end
                      
-                     N(i) = S(i) + I(i) + R(i);
-                     N(j) = S(j) + I(j) + R(j);
                 end
             end
-            
-        %N_save(i, clock) = [S(i)+I(i)+R(i)];
-        %S_save(i, clock) = S(i);
-        %I_save(i, clock) = I(i);
-        %R_save(i, clock) = R(i);
     end
     
     for i = 1:numCities
@@ -205,6 +171,7 @@ for clock = 1:clock_max
          I_peaks(1, clock) = I_save(i,  clock) + I_peaks(1, clock);
     end
     
+    %Draw pie charts
     clf('reset')
 
     subplot(3, 3, 1);
