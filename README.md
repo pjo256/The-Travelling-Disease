@@ -1,4 +1,4 @@
 Simulations
 ===========
 
-SIR model with immigration rates
+<p  style=" margin: 12px auto 6px auto; font-family: Helvetica,Arial,Sans-serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 14px; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none; display: block;">   <a title="View The Travelling Disease on Scribd" href="http://www.scribd.com/doc/222780214/The-Travelling-Disease"  style="text-decoration: underline;" >The Travelling Disease</a> by <a title="View Abhi Agarwal's profile on Scribd" href="http://www.scribd.com/abhia_5"  style="text-decoration: underline;" >Abhi Agarwal</a></p><iframe class="scribd_iframe_embed" src="//www.scribd.com/embeds/222780214/content?start_page=1&view_mode=scroll&access_key=key-8pvpadiie4i28kiwy88&show_recommendations=true" data-auto-height="false" data-aspect-ratio="0.7080062794348508" scrolling="no" id="doc_55496" width="100%" height="600" frameborder="0"></iframe>
